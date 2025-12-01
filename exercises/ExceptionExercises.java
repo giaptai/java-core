@@ -14,7 +14,11 @@ public class ExceptionExercises {
      */
     public static double divide(int a, int b) {
         // TODO: Implement với try-catch
-        return 0;
+        try{
+            return a/b;
+        }catch(ArithmeticException e){
+            throw new ArithmeticException("Can't divide ZERO !");
+        }
     }
 
     // ===== BÀI 2: MULTIPLE CATCH BLOCKS =====
@@ -26,7 +30,14 @@ public class ExceptionExercises {
      */
     public static int parseInteger(String str) {
         // TODO: Implement với multiple catch blocks
-        return 0;
+        try{
+            return Integer.parseInt(str);
+        }catch(NumberFormatException e){
+            throw new NumberFormatException("Must a format number");
+
+        }catch(NullPointerException e){
+            throw new NullPointerException("can't be null");
+        }
     }
 
     // ===== BÀI 3: FINALLY BLOCK =====
