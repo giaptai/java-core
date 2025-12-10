@@ -1,5 +1,11 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BÀI TẬP THỰC HÀNH - EXCEPTION HANDLING
@@ -14,10 +20,11 @@ public class ExceptionExercises {
      */
     public static double divide(int a, int b) {
         // TODO: Implement với try-catch
-        try{
-            return a/b;
-        }catch(ArithmeticException e){
-            throw new ArithmeticException("Can't divide ZERO !");
+        try {
+            return a / b;
+        } catch (ArithmeticException e) {
+            System.err.println("Can't divide ZERO !");
+            return Double.NaN;
         }
     }
 
@@ -30,14 +37,14 @@ public class ExceptionExercises {
      */
     public static int parseInteger(String str) {
         // TODO: Implement với multiple catch blocks
-        try{
+        try {
             return Integer.parseInt(str);
-        }catch(NumberFormatException e){
-            throw new NumberFormatException("Must a format number");
-
-        }catch(NullPointerException e){
-            throw new NullPointerException("can't be null");
+        } catch (NumberFormatException e) {
+            System.err.println("Must a format number");
+        } catch (NullPointerException e) {
+            System.err.println("can't be null");
         }
+        return 0;
     }
 
     // ===== BÀI 3: FINALLY BLOCK =====
@@ -47,18 +54,27 @@ public class ExceptionExercises {
      */
     public static String readFile(String filename) {
         // TODO: Sử dụng try-catch-finally
-        // FileReader fr = null;
-        // BufferedReader br = null;
-        // try {
-        //     fr = new FileReader(filename);
-        //     br = new BufferedReader(fr);
-        //     return br.readLine();
-        // } catch (IOException e) {
-        //     // Handle
-        // } finally {
-        //     // Close resources
-        // }
-        return null;
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(filename);
+            br = new BufferedReader(fr);
+            return br.readLine();
+        } catch (IOException e) {
+            // Handle
+            e.printStackTrace();
+            return null;
+        } finally {
+            // Close resources
+            try {
+                if (br != null)
+                    br.close();
+                if (fr != null)
+                    fr.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // ===== BÀI 4: TRY-WITH-RESOURCES =====
@@ -68,6 +84,16 @@ public class ExceptionExercises {
      */
     public static String readFileWithResources(String filename) {
         // TODO: Implement try-with-resources
+        try (InputStream fip = new FileInputStream(filename)) {
+            StringBuilder sb = new StringBuilder();
+            int byteRead = 0;
+            while ((byteRead = fip.read()) != -1) {
+                sb.append((char) byteRead);
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -79,6 +105,10 @@ public class ExceptionExercises {
      */
     public static void validateAge(int age) {
         // TODO: Ném exception nếu age < 18
+        if (age < 18) {
+            throw new IllegalArgumentException("You 18 yet ?");
+        }
+        System.out.println("Yeah Are you ready for the game ??");
     }
 
     // ===== BÀI 6: THROWS KEYWORD =====
@@ -88,7 +118,15 @@ public class ExceptionExercises {
      */
     public static List<String> readAllLines(String filename) throws IOException {
         // TODO: Đọc tất cả dòng từ file, không catch IOException
-        return null;
+        try (FileReader fileReader = new FileReader(filename);
+                BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            List<String> list = new ArrayList<>();
+            String line = "";
+            while ((line = bufferedReader.readLine()) != null) {
+                list.add(line);
+            }
+            return list;
+        }
     }
 
     // ===== BÀI 7: CUSTOM CHECKED EXCEPTION =====
@@ -101,7 +139,20 @@ public class ExceptionExercises {
         private double requestedAmount;
 
         // TODO: Constructor với message, currentBalance, requestedAmount
+        public InsufficientBalanceException(String message, double currentBalance, double requestedAmount) {
+            super(message);
+            this.currentBalance = currentBalance;
+            this.requestedAmount = requestedAmount;
+        }
+
         // TODO: Getter methods
+        public double getCurrentBalance() {
+            return this.currentBalance;
+        }
+
+        public double getRequestedAmount() {
+            return this.requestedAmount;
+        }
     }
 
     /**
@@ -116,6 +167,10 @@ public class ExceptionExercises {
 
         public void withdraw(double amount) throws InsufficientBalanceException {
             // TODO: Kiểm tra balance, ném exception nếu không đủ
+            if (this.balance < amount) {
+                throw new InsufficientBalanceException("Insufficient balance", this.balance, amount);
+            }
+            this.balance -= amount;
         }
 
         public void deposit(double amount) {
@@ -136,6 +191,9 @@ public class ExceptionExercises {
      */
     static class InvalidEmailException extends RuntimeException {
         // TODO: Constructor với message
+        public InvalidEmailException() {
+            super("invalid email");
+        }
     }
 
     /**
@@ -143,7 +201,12 @@ public class ExceptionExercises {
      */
     public static void validateEmail(String email) {
         // TODO: Kiểm tra email có chứa '@' và '.'
+        if (email.matches(".*@.*\\..")) {
+            System.out.println("Valid email");
+            return;
+        }
         // TODO: Ném InvalidEmailException nếu không hợp lệ
+        throw new InvalidEmailException();
     }
 
     // ===== BÀI 9: EXCEPTION CHAINING =====
@@ -187,9 +250,9 @@ public class ExceptionExercises {
             int idx = Integer.parseInt(index);
 
             // Array access
-            int[] array = {1, 2, 3};
+            int[] array = { 1, 2, 3 };
             System.out.println(array[idx]);
-
+            fr.close();
         } catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
             // TODO: Handle tất cả exceptions
             System.out.println("Error: " + e.getMessage());
@@ -205,6 +268,7 @@ public class ExceptionExercises {
         try {
             FileReader fr = new FileReader(filename);
             // Process...
+            fr.close();
         } catch (IOException e) {
             // TODO: Log exception
             System.err.println("Error processing file: " + e.getMessage());
@@ -224,7 +288,12 @@ public class ExceptionExercises {
 
         public MyFile(String path) throws FileNotFoundException {
             // TODO: Validate path
+            if (path == null || path.isEmpty()) {
+                throw new IllegalArgumentException("Path cannot be null or empty");
+            }
+            this.path = path;
             // TODO: Tạo FileReader, có thể ném FileNotFoundException
+            this.reader = new FileReader(this.path);
         }
 
         public void close() throws IOException {
@@ -242,6 +311,7 @@ public class ExceptionExercises {
     public static void badExample1(String filename) {
         try {
             FileReader fr = new FileReader(filename);
+            fr.close();
         } catch (Exception e) {
             // Empty catch - BAD!
         }
@@ -253,6 +323,7 @@ public class ExceptionExercises {
     public static void badExample2(String filename) {
         try {
             FileReader fr = new FileReader(filename);
+            fr.close();
         } catch (Exception e) {
             // Quá chung - BAD!
             e.printStackTrace();
@@ -264,6 +335,34 @@ public class ExceptionExercises {
      */
     public static void goodExample(String filename) {
         // TODO: Implement đúng cách
+        FileReader fr = null;
+        BufferedReader br = null;
+        try {
+            fr = new FileReader(filename);
+            br = new BufferedReader(fr);
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+            br.close();
+            fr.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + filename);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // ===== BÀI 14: AUTOCLOSEABLE CUSTOM CLASS =====
@@ -303,6 +402,11 @@ public class ExceptionExercises {
      */
     public static void useDatabaseConnection() {
         // TODO: Implement try-with-resources
+        try (DatabaseConnection conn = new DatabaseConnection("jdbc:mysql://localhost:1123/test")) {
+            conn.executeQuery("SELECT * FROM tests");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ===== BÀI 15: EXCEPTION TRANSLATION =====
@@ -334,65 +438,64 @@ public class ExceptionExercises {
         }
     }
 
-
     // ===== MAIN - TEST CODE =====
 
     public static void main(String[] args) {
         System.out.println("=== BÀI 1: BASIC TRY-CATCH ===");
-        // System.out.println(divide(10, 2));  // 5.0
-        // System.out.println(divide(10, 0));  // Handle exception
+        System.out.println(divide(10, 2)); // 5.0
+        System.out.println(divide(10, 0)); // Handle exception
 
         System.out.println("\n=== BÀI 2: MULTIPLE CATCH ===");
-        // System.out.println(parseInteger("123"));    // 123
-        // System.out.println(parseInteger("abc"));    // Handle NumberFormatException
-        // System.out.println(parseInteger(null));     // Handle NullPointerException
+        System.out.println(parseInteger("123")); // 123
+        System.out.println(parseInteger("abc")); // Handle NumberFormatException
+        System.out.println(parseInteger(null)); // Handle NullPointerException
 
         System.out.println("\n=== BÀI 3: FINALLY ===");
-        // System.out.println(readFile("test.txt"));
+        System.out.println(readFile("test.txt"));
 
         System.out.println("\n=== BÀI 4: TRY-WITH-RESOURCES ===");
-        // System.out.println(readFileWithResources("test.txt"));
+        System.out.println(readFileWithResources("test.txt"));
 
         System.out.println("\n=== BÀI 5: THROW ===");
-        // try {
-        //     validateAge(25);  // OK
-        //     validateAge(15);  // Exception
-        // } catch (IllegalArgumentException e) {
-        //     System.out.println(e.getMessage());
-        // }
+        try {
+            validateAge(25); // OK
+            validateAge(15); // Exception
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
 
         System.out.println("\n=== BÀI 6: THROWS ===");
-        // try {
-        //     List<String> lines = readAllLines("test.txt");
-        // } catch (IOException e) {
-        //     System.out.println("Error: " + e.getMessage());
-        // }
+        try {
+            List<String> lines = readAllLines("test.txt");
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
 
         System.out.println("\n=== BÀI 7: CUSTOM CHECKED EXCEPTION ===");
-        // BankAccount account = new BankAccount(1000);
-        // try {
-        //     account.withdraw(1500);
-        // } catch (InsufficientBalanceException e) {
-        //     System.out.println(e.getMessage());
-        //     System.out.println("Current: " + e.getCurrentBalance());
-        //     System.out.println("Requested: " + e.getRequestedAmount());
-        // }
+        BankAccount account = new BankAccount(1000);
+        try {
+            account.withdraw(1500);
+        } catch (InsufficientBalanceException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Current: " + e.getCurrentBalance());
+            System.out.println("Requested: " + e.getRequestedAmount());
+        }
 
         System.out.println("\n=== BÀI 8: CUSTOM UNCHECKED EXCEPTION ===");
-        // try {
-        //     validateEmail("valid@email.com");    // OK
-        //     validateEmail("invalid-email");      // Exception
-        // } catch (InvalidEmailException e) {
-        //     System.out.println(e.getMessage());
-        // }
+        try {
+            validateEmail("valid@email.com"); // OK
+            validateEmail("invalid-email"); // Exception
+        } catch (InvalidEmailException e) {
+            System.out.println(e.getMessage());
+        }
 
         System.out.println("\n=== BÀI 9: EXCEPTION CHAINING ===");
-        // try {
-        //     connectToDatabase("");
-        // } catch (DatabaseException e) {
-        //     System.out.println(e.getMessage());
-        //     System.out.println("Caused by: " + e.getCause());
-        // }
+        try {
+            connectToDatabase("");
+        } catch (DatabaseException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Caused by: " + e.getCause());
+        }
 
         System.out.println("\n=== BÀI 10: MULTI-CATCH ===");
         // multiCatchExample("nonexistent.txt", "5");
@@ -401,11 +504,11 @@ public class ExceptionExercises {
         // useDatabaseConnection();
 
         System.out.println("\n=== BÀI 15: EXCEPTION TRANSLATION ===");
-        // try {
-        //     String user = UserService.loadUser("user123");
-        // } catch (UserService.UserNotFoundException e) {
-        //     System.out.println(e.getMessage());
-        //     System.out.println("Original cause: " + e.getCause());
-        // }
+        try {
+            String user = UserService.loadUser("user123");
+        } catch (UserService.UserNotFoundException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Original cause: " + e.getCause());
+        }
     }
 }

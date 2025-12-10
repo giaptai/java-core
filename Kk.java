@@ -35,6 +35,7 @@ class hmmok extends hmm{
 
 public class Kk {
     public static void main(String[] args) {
+        System.out.println((int) 'z' - 'a');
         int factor = 2;
         Function<Integer, Integer> multiply = x -> x * factor;
         // factor = 3; // Error: phải effectively final
