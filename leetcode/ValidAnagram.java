@@ -42,7 +42,7 @@ public class ValidAnagram {
             }
         }
         return true;
-    }
+    }   
 
     public static void main(String[] args) {
         String s_case1 = "racecar", t_case1 = "carrace";

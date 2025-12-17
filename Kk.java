@@ -1,10 +1,17 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+
 interface ok {
     void okt();
 
@@ -21,30 +28,127 @@ interface okcon extends ok {
     }
 }
 
-abstract class hmm{
+abstract class hmm {
     static int add(int a, int b) {
         return a + b;
     }
+
+    abstract void crushT();
 }
 
-class hmmok extends hmm{
+class hmmok extends hmm {
     static int add(int a, int b) {
         return a + b;
+    }
+
+    @Override
+    protected void crushT() {
+        System.out.println("Sdsds");
+    }
+}
+
+class Person2 {
+    String name;
+
+    Person2(String name) {
+        this.name = name;
+    }
+}
+
+class Counter {
+    private int count = 0;
+
+    // Method 1
+    public void increment() {
+        count++;
+    }
+
+    // Method 2
+    public synchronized void incrementSync() {
+        count++;
+    }
+
+    // Method 3
+    protected volatile int volatileCount = 0;
+
+    public void incrementVolatile() {
+        volatileCount++;
     }
 }
 
 public class Kk {
+    static void change(Person2 p) {
+        p.name = "Bob"; // Thay đổi object (OK)
+        // p = new Person2("Charlie"); // Chỉ thay đổi local reference
+    }
+
+    public static int test() {
+        int x = 1;
+        try {
+            return x; // Ghi nhớ x = 1
+        } finally {
+            x = 2; // Thay đổi x KHÔNG ảnh hưởng return value
+        }
+        // Return 1, không phải 2!
+    }
+
+    public static StringBuilder testObject() {
+        StringBuilder sb = new StringBuilder("A");
+        try {
+            return sb; // Ghi nhớ reference của sb
+        } finally {
+            sb.append("B"); // Thay đổi object → ảnh hưởng!
+        }
+        // Return "AB", vì reference giống nhau
+    }
+
+    public static int test1() {
+        try {
+            System.out.println("A");
+            return 1;
+        } catch (Exception e) {
+            System.out.println("B");
+            return 2;
+        } finally {
+            System.out.println("C");
+        }
+    }
+
+    public static int testThrowFinal() {
+        try {
+            throw new IOException("Original");
+        } catch (IOException e) {
+            throw new SQLException("From catch"); // Ghi nhớ exception
+        } finally {
+            throw new RuntimeException("From finally"); // GHI ĐÈ!
+        }
+    }
+
     public static void main(String[] args) {
-        System.out.println((int) 'z' - 'a');
-        int factor = 2;
-        Function<Integer, Integer> multiply = x -> x * factor;
-        // factor = 3; // Error: phải effectively final
-
-        List<List<Integer>> nested = Arrays.asList(
-                Arrays.asList(1, 2),
-                Arrays.asList(3, 4),
-                Arrays.asList(5, 6));
-
-        nested.stream().flatMap(t -> t.stream()).forEach(t -> System.out.printf("%d ", t));
+        // String sq = null;
+        // String s = Optional.ofNullable(sq).orElse("HEEH");
+        // System.out.println(s);
+        // Counter counter = new Counter();
+        // Thread[] threads = new Thread[1000];
+        // for (int i = 0; i < 1000; i++) {
+        //     threads[i] = new Thread(() -> {
+        //         for (int j = 0; j < 1000; j++) {
+        //             counter.incrementVolatile(); // Hoặc incrementSync() hoặc incrementVolatile()
+        //         }
+        //     });
+        //     threads[i].start();
+        // }
+        // for (Thread t : threads) {
+        //     try {
+        //         t.join();
+        //     } catch (InterruptedException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
+        // System.out.println("Final count: " + counter.volatileCount);
+        System.out.println(testObject());
+        // System.out.println(test());
+        // System.out.println(test1());
+        // System.out.println(testThrowFinal());
     }
 }
