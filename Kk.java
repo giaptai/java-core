@@ -11,6 +11,16 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 interface ok {
     void okt();
@@ -102,6 +112,15 @@ public class Kk {
         // Return "AB", vì reference giống nhau
     }
 
+    public static String testObject2() {
+        String sb = new String("S");
+        try {
+            return sb;
+        } finally {
+            sb += "sssss";
+        }
+    }
+
     public static int test1() {
         try {
             System.out.println("A");
@@ -124,6 +143,58 @@ public class Kk {
         }
     }
 
+    public static void fileHEHEH() {
+        File ss = new File("ssss.txt");
+        try {
+            if (ss.createNewFile()) {
+                System.out.println("Created successfully");
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+
+        }
+        ss.exists();
+        // read
+        try (BufferedReader reader = new BufferedReader(new FileReader("ssss.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // write
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("ssss.txt"))) {
+            writer.write("Hello World");
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void s() throws SQLException {
+        Connection conn = DriverManager.getConnection("url", "user", "password");
+
+        String sql = "SELECT * FROM rooms WHERE id = ?";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, 101);
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            System.out.println(id + " - " + name);
+        }
+
+        // close resource
+        rs.close();
+        ps.close();
+        conn.close();
+    }
+
     public static void main(String[] args) {
         // String sq = null;
         // String s = Optional.ofNullable(sq).orElse("HEEH");
@@ -131,24 +202,25 @@ public class Kk {
         // Counter counter = new Counter();
         // Thread[] threads = new Thread[1000];
         // for (int i = 0; i < 1000; i++) {
-        //     threads[i] = new Thread(() -> {
-        //         for (int j = 0; j < 1000; j++) {
-        //             counter.incrementVolatile(); // Hoặc incrementSync() hoặc incrementVolatile()
-        //         }
-        //     });
-        //     threads[i].start();
+        // threads[i] = new Thread(() -> {
+        // for (int j = 0; j < 1000; j++) {
+        // counter.incrementVolatile(); // Hoặc incrementSync() hoặc incrementVolatile()
+        // }
+        // });
+        // threads[i].start();
         // }
         // for (Thread t : threads) {
-        //     try {
-        //         t.join();
-        //     } catch (InterruptedException e) {
-        //         e.printStackTrace();
-        //     }
+        // try {
+        // t.join();
+        // } catch (InterruptedException e) {
+        // e.printStackTrace();
+        // }
         // }
         // System.out.println("Final count: " + counter.volatileCount);
-        System.out.println(testObject());
+        // System.out.println(testObject());
+        // System.out.println(testObject2());
         // System.out.println(test());
         // System.out.println(test1());
-        // System.out.println(testThrowFinal());
+        System.out.println(testThrowFinal());
     }
 }

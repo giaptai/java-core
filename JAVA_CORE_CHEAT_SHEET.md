@@ -648,6 +648,94 @@ try (PrintWriter pw = new PrintWriter(new FileWriter("output.txt"))) {
 }
 ```
 
+### Tạo file/folder
+
+#### Tạo file
+```java
+// Cách 1: File.createNewFile()
+File file = new File("newfile.txt");
+try {
+    if (file.createNewFile()) {
+        System.out.println("File created: " + file.getName());
+    } else {
+        System.out.println("File already exists.");
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+
+// Cách 2: Files.createFile() (Java 7+)
+try {
+    Path path = Files.createFile(Paths.get("newfile.txt"));
+    System.out.println("File created at: " + path);
+} catch (FileAlreadyExistsException e) {
+    System.out.println("File already exists");
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+#### Tạo thư mục
+```java
+// Tạo 1 folder
+File dir = new File("newfolder");
+if (dir.mkdir()) {
+    System.out.println("Directory created");
+}
+
+// Tạo nhiều cấp folder (parent folders nếu chưa có)
+File dirs = new File("parent/child/grandchild");
+if (dirs.mkdirs()) {
+    System.out.println("Directories created");
+}
+
+// Java 7+ (tốt hơn)
+try {
+    Path path = Files.createDirectory(Paths.get("newfolder"));
+    // Hoặc tạo nhiều cấp:
+    Path paths = Files.createDirectories(Paths.get("parent/child/grandchild"));
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+#### Check file/folder tồn tại
+```java
+File file = new File("example.txt");
+if (file.exists()) {
+    System.out.println("File exists");
+    System.out.println("Is file: " + file.isFile());
+    System.out.println("Is directory: " + file.isDirectory());
+    System.out.println("Can read: " + file.canRead());
+    System.out.println("Can write: " + file.canWrite());
+    System.out.println("Size: " + file.length() + " bytes");
+}
+
+// Java 7+
+Path path = Paths.get("example.txt");
+if (Files.exists(path)) {
+    System.out.println("File exists");
+}
+```
+
+#### Xóa file/folder
+```java
+// Xóa file
+File file = new File("example.txt");
+if (file.delete()) {
+    System.out.println("File deleted");
+}
+
+// Java 7+ (tốt hơn)
+try {
+    Files.delete(Paths.get("example.txt"));
+    // Hoặc không throw exception nếu file không tồn tại:
+    Files.deleteIfExists(Paths.get("example.txt"));
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
 ### Binary File (FileInputStream/FileOutputStream)
 
 ```java
@@ -692,6 +780,19 @@ Ghi file:
   BufferedWriter.write()       → Ghi text (nhanh)
   Files.write()                → Ghi List<String> (đơn giản)
   PrintWriter.println()        → Ghi với print methods (tiện)
+
+Tạo file/folder:
+  file.createNewFile()         → Tạo file (File class)
+  Files.createFile()           → Tạo file (Java 7+)
+  dir.mkdir()                  → Tạo 1 folder
+  dir.mkdirs()                 → Tạo nhiều cấp folder
+  Files.createDirectories()    → Tạo nhiều cấp (Java 7+)
+
+Check/Delete:
+  file.exists()                → Check tồn tại
+  file.isFile() / isDirectory() → Check loại
+  file.delete()                → Xóa
+  Files.deleteIfExists()       → Xóa nếu tồn tại (Java 7+)
 
 Binary file:
   FileInputStream/FileOutputStream → Đọc/ghi byte array
