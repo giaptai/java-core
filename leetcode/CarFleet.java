@@ -2,7 +2,6 @@ package leetcode;
 
 import java.util.Stack;
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * Có n xe ô tô di chuyển đến cùng 1 điểm trên 1 dường cao tốc
