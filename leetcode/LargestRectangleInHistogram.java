@@ -1,6 +1,8 @@
 package leetcode;
 
-import java.lang.Math; 
+import java.lang.Math;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 public class LargestRectangleInHistogram {
 
@@ -19,38 +21,26 @@ public class LargestRectangleInHistogram {
         return maxArea;
     }
 
-    // solution 2 - O(n) - wtf
+    // solution 2 - O(n) - monotonic stack
     public static int largestRectangleArea2(int[] heights) {
-        if (heights.length == 1) {
-            return 1 * heights[0];
-        }
-
-        int len = heights.length;
-        int[] leftH = new int[len];
-        int[] rightH = new int[len];
-
-        leftH[0] = -1;
-        for (int i = 1; i < len; i++) {
-            int p = i - 1;
-            while (p >= 0 && heights[p] >= heights[i]) {
-                p = leftH[p];
-            }
-            leftH[i] = p;
-        }
-
-        rightH[len - 1] = len;
-        for (int j = len - 2; j >= 0; j--) {
-            int p = j + 1;
-            while (p < len && heights[p] >= heights[j]) {
-                p = rightH[p];
-            }
-            rightH[j] = p;
-        }
+        Deque<Integer> d = new ArrayDeque<>(); // stack stores indices in increasing height order
         int maxArea = 0;
-        for (int k = 0; k < len; k++) {
-            maxArea = Math.max(maxArea, heights[k] * (rightH[k] - leftH[k] - 1));
+        // i <= heights.length: add a virtual bar with height 0 at the end
+        // to force all remaining bars in stack to be processe
+        for (int i = 0; i <= heights.length; i++) {
+            int curr_h = (i == heights.length ? 0 : heights[i]);
+            // when current height < stack top:
+            // the bar at stack top can't extend right anymore
+            // so we pop it and calculate its max area
+            while (!d.isEmpty() && curr_h < heights[d.peek()]) {
+                int height = heights[d.pop()];
+                // width = distance between current index and the new stack top
+                // if stack empty: this bar is the smallest from index 0 to i
+                int width = d.isEmpty() ? i : i - d.peek() - 1;
+                maxArea = Math.max(maxArea, height * width);
+            }
+            d.push(i);
         }
-
         return maxArea;
     }
 
@@ -58,7 +48,11 @@ public class LargestRectangleInHistogram {
 
     public static void main(String[] args) {
         int[] case1 = { 2, 1, 5, 6, 2, 3 };
-        System.out.println(largestRectangleArea(case1));
-        // System.out.println(largestRectangleArea2(case1));
+        int[] case2 = { 1, 2, 3, 4 };
+        int[] case3 = { 4, 3, 2, 1 };
+        // System.out.println(largestRectangleArea(case1));
+        System.out.println(largestRectangleArea2(case1));
+        System.out.println(largestRectangleArea2(case2));
+        System.out.println(largestRectangleArea2(case3));
     }
 }
