@@ -26,7 +26,7 @@ public class LargestRectangleInHistogram {
         Deque<Integer> d = new ArrayDeque<>(); // stack stores indices in increasing height order
         int maxArea = 0;
         // i <= heights.length: add a virtual bar with height 0 at the end
-        // to force all remaining bars in stack to be processe
+        // to force all remaining bars in stack to be processed
         for (int i = 0; i <= heights.length; i++) {
             int curr_h = (i == heights.length ? 0 : heights[i]);
             // when current height < stack top:
