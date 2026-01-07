@@ -8,7 +8,7 @@ public class KokoEatingBananas {
         int right = Arrays.stream(piles).max().getAsInt();
         int result = right;
         while (left <= right) {
-            int mid = left + (right - left) / 2;
+            int mid = left + (right - left) / 2; // choose banana eating number per hour
             long hours = 0;
             for (int i = 0; i < piles.length; i++) {
                 hours += (piles[i] + mid - 1) / mid;
