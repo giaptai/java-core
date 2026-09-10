@@ -1,0 +1,21 @@
+:root{
+
+}
+
+#myCanvas{
+    /* width:100%; */
+    image-rendering: pixelated;
+}
+
+#myTools{
+    position: fixed;
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+    padding: 8px;
+    background: rgba(188, 182, 182, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(90px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
