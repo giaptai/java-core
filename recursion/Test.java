@@ -32,10 +32,18 @@ public class Test {
         int mod = num % 2 == 0 ? 0 : 1;
         return decToBinary(num / 2, mod + value); 
     }
+    
+    int decToBinary1(int n){
+        if(n == 0){
+            return 0;
+        }
+        return n % 2 + 10 * decToBinary1(n/2);
+    }
 
     public static void main(String[] args) {
-        System.out.println(new Test().sumOfDigit(10000));
-        System.out.println(new Test().powerOfNum(3, 3));
-        System.out.println(new Test().decToBinary(27, ""));
+        // System.out.println(new Test().sumOfDigit(10000));
+        // System.out.println(new Test().powerOfNum(3, 3));
+        System.out.println(new Test().decToBinary(29, ""));
+        System.out.println(new Test().decToBinary1(17));
     }
 }
