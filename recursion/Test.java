@@ -25,8 +25,17 @@ public class Test {
         return gcd(b, a%b);
     }
 
+    String decToBinary(int num, String value){
+        if (num == 0){
+            return value;
+        }
+        int mod = num % 2 == 0 ? 0 : 1;
+        return decToBinary(num / 2, mod + value); 
+    }
+
     public static void main(String[] args) {
         System.out.println(new Test().sumOfDigit(10000));
         System.out.println(new Test().powerOfNum(3, 3));
+        System.out.println(new Test().decToBinary(27, ""));
     }
 }
